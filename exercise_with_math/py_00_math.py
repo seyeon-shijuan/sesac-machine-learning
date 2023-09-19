@@ -33,6 +33,7 @@ def e110():
 
 
 def e111():
+    # 분산
     score1 = 10
     score2 = 20
     score3 = 30
