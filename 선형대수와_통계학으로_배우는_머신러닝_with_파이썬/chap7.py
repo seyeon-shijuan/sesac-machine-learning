@@ -6,6 +6,7 @@ from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import accuracy_score
+from sklearn.metrics import confusion_matrix
 
 raw_boston = datasets.load_boston()
 
@@ -82,3 +83,18 @@ for k in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]:
 
 print(final_k)
 print(accuracy)
+
+
+# 분류(정확도)
+y_pred = [0, 2, 1, 3]
+y_true = [0, 1, 2, 3]
+print(accuracy_score(y_true, y_pred))
+print(accuracy_score(y_true, y_pred, normalize=False))
+
+# confusion matrix
+y_true = [2, 0, 2, 2, 0, 1]
+y_pred = [0, 0, 2, 2, 0, 2]
+print(confusion_matrix(y_true, y_pred))
+
+
+
