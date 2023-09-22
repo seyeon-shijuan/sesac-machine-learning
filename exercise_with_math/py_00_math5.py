@@ -223,6 +223,7 @@ def e199():
 
 
 def e1100():
+    # transposed matrix
     mat1 = [[1, 2, 3],
             [4, 5, 6],
             [7, 8, 9]]
