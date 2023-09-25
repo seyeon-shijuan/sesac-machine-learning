@@ -11,6 +11,8 @@ from sklearn.preprocessing import RobustScaler
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.preprocessing import Normalizer
 
+# 머신러닝 데이터 살펴보기
+
 ''' 데이터셋 설명 '''
 '''
 # 집값 예측

@@ -8,6 +8,8 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import confusion_matrix
 
+# 모형 평가
+
 raw_boston = datasets.load_boston()
 
 X = raw_boston.data
