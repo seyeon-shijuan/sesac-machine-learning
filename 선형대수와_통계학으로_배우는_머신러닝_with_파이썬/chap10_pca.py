@@ -4,11 +4,14 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.decomposition import KernelPCA
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+from sklearn.manifold import LocallyLinearEmbedding
 
 from sklearn.metrics import accuracy_score
 
 import pandas as pd
 import matplotlib.pyplot as plt
+
 
 def pca_test():
     raw_wine = datasets.load_wine()
@@ -105,6 +108,7 @@ def pca_test():
     accuracy_pca = accuracy_score(y_te, pred_rf_pca)
     print(accuracy_pca)
 
+
 def kernel_pca_test():
     # kernel pca
     raw_wine = datasets.load_wine()
@@ -157,4 +161,108 @@ def kernel_pca_test():
 
     accuracy = accuracy_score(y_te, pred_rf_kpca)
     print(accuracy)
+
+
+def lda_test():
+    # LDA
+    raw_wine = datasets.load_wine()
+
+    X = raw_wine.data
+    y = raw_wine.target
+
+    X_tn, X_te, y_tn, y_te = train_test_split(X, y, random_state=1)
+    std_scale = StandardScaler()
+    std_scale.fit(X_tn)
+    X_tn_std = std_scale.transform(X_tn)
+    X_te_std = std_scale.transform(X_te)
+
+    lda = LinearDiscriminantAnalysis()
+    lda.fit(X_tn_std, y_tn)
+    X_tn_lda = lda.transform(X_tn_std)
+    X_te_lda = lda.transform(X_te_std)
+
+    print(X_tn_std.shape)
+    print(X_te_std.shape)
+    print(lda.intercept_)
+    print(lda.coef_)
+
+    lda_columns = ['lda_comp1', 'lda_comp2']
+    X_tn_lda_df = pd.DataFrame(X_tn_lda, columns=lda_columns)
+    X_tn_lda_df['target'] = y_tn
+    print(X_tn_lda_df.head(5))
+
+    df = X_tn_lda_df
+    markers = ['o', 'x', '^']
+
+    for i, mark in enumerate(markers):
+        X_i = df[df['target'] == i]
+        target_i = raw_wine.target_names[i]
+        X1 = X_i['lda_comp1']
+        X2 = X_i['lda_comp2']
+        plt.scatter(X1, X2, marker=mark, label=target_i)
+
+    plt.xlabel("lda_comp1")
+    plt.ylabel("lda_comp2")
+    plt.legend()
+    # plt.show()
+
+    clf_rf_lda = RandomForestClassifier(max_depth=2, random_state=0)
+    clf_rf_lda.fit(X_tn_lda, y_tn)
+    pred_rf_lda = clf_rf_lda.predict(X_te_lda)
+    print(pred_rf_lda)
+
+    accuracy = accuracy_score(y_te, pred_rf_lda)
+    print(accuracy)
+
+
+def lle_test():
+    raw_wine = datasets.load_wine()
+
+    X = raw_wine.data
+    y = raw_wine.target
+
+    X_tn, X_te, y_tn, y_te = train_test_split(X, y, random_state=1)
+    std_scale = StandardScaler()
+    std_scale.fit(X_tn)
+    X_tn_std = std_scale.transform(X_tn)
+    X_te_std = std_scale.transform(X_te)
+
+    lle = LocallyLinearEmbedding(n_components=2)
+    lle.fit(X_tn_std, y_tn)
+    X_tn_lle = lle.transform(X_tn_std)
+    X_te_lle = lle.transform(X_te_std)
+
+    print(X_tn_std.shape)
+    print(X_tn_lle.shape)
+
+    print(lle.embedding_)
+
+    lle_columns = ['lle_comp1', 'lle_comp2']
+    X_tn_lle_df = pd.DataFrame(X_tn_lle, columns=lle_columns)
+    X_tn_lle_df['target'] = y_tn
+    print(X_tn_lle_df.head(5))
+
+    df = X_tn_lle_df
+    markers = ['o', 'x', '^']
+
+    for i, mark in enumerate(markers):
+        X_i = df[df['target'] == i]
+        target_i = raw_wine.target_names[i]
+        X1 = X_i['lle_comp1']
+        X2 = X_i['lle_comp2']
+        plt.scatter(X1, X2, marker=mark, label=target_i)
+
+    plt.xlabel("lle_comp1")
+    plt.ylabel("lle_comp2")
+    plt.legend()
+    plt.show()
+
+    clf_rf_lle = RandomForestClassifier(max_depth=2, random_state=0)
+    clf_rf_lle.fit(X_tn_lle, y_tn)
+    pred_rf_lle = clf_rf_lle.predict(X_te_lle)
+    print(pred_rf_lle)
+
+    accuracy = accuracy_score(y_te, pred_rf_lle)
+    print(accuracy)
+
 
