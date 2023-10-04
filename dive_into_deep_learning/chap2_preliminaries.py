@@ -1,7 +1,9 @@
 import torch
 import os
 import pandas as pd
-
+import numpy as np
+from d2l import torch as d2l
+# conda install -c conda-forge d2l
 
 def tensor_test():
     x = torch.arange(12, dtype=torch.float32)
@@ -112,7 +114,82 @@ def linear_algebra():
     print(x.shape)
 
     # matrices
+    A = torch.arange(6).reshape(3, 2)
+    print(A)
+    print(A.T)
 
+    A = torch.tensor([[1, 2, 3], [2, 0, 4], [3, 4, 5]])
+    print(A == A.T)
+
+    # tensors
+    print(torch.arange(24).reshape(2, 3, 4))
+
+    # basic properties of tensor arithmetic
+    A = torch.arange(6, dtype=torch.float32).reshape(2, 3)
+    B = A.clone()
+    print(A, A+B)
+    print(id(A), id(A+B), (id(A) == id(A+B)))
+
+    print(A * B)
+
+    a = 2
+    X = torch.arange(24).reshape(2, 3, 4)
+    print(a + X, (a * X).shape)
+
+    # reduction
+    x = torch.arange(3, dtype=torch.float32)
+    print(x, x.sum())
+
+    A = torch.arange(6, dtype=torch.float32).reshape(2, 3)
+    print(A.shape, A.sum())
+    tmp = A.numel()
+    # numel = 개수(len)
+    print(A.mean(), A.sum() / A.numel())
+    print("shape:", A.shape) # shape[0]은 2
+    print(A.mean(axis=0), A.sum(axis=0) / A.shape[0])
+
+    # non reduction sum
+    sum_A = A.sum(axis=1, keepdims=True)
+    print(sum_A, sum_A.shape)
+
+    print(A / sum_A)
+
+    print("A:", A)
+    # cumulative sum of elements
+    print(A.cumsum(axis=0))
+    # axis=0이면 각자 세로로 더하기
+
+    # dot products
+    y = torch.ones(3, dtype=torch.float32)
+    print(x, y, torch.dot(x, y))
+
+    print(torch.sum(x * y))
+
+    # matrix-vector products
+    print(f"A: {A} x: {x}")
+    print(A.shape, x.shape, torch.mv(A, x), A@x)
+
+    # 2x3 X 3x1 = 2x1
+
+    # matrix-matrix multiplication
+    # a_1^T는 첫번째 행벡터를 의미
+
+    B = torch.ones(3, 4)
+    print(torch.mm(A, B), A@B)
+
+    # norms
+    # l2 norm
+    u = torch.tensor([3.0, -4.0])
+    print(torch.norm(u))
+    # l1 norm
+    print(torch.abs(u).sum())
+
+    # Frobenius norm
+    print(torch.norm(torch.ones(4, 9)))
+
+
+def calculus_test():
+    pass
 
 
 if __name__ == '__main__':
@@ -120,4 +197,5 @@ if __name__ == '__main__':
     # operations_test()
     # conversion_to_other_python_objects()
     # data_preprocessing_test()
-    linear_algebra()
+    # linear_algebra()
+    calculus_test()
