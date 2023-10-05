@@ -98,9 +98,41 @@ def iris_pairplot():
             single_pair(axes, i, j, iris_X, iris_y, cls_dict, feature_names)
 
 
+''' CODE REFACTORING FOR THE PAIR PLOT '''
+
+
+def single_pair2(axes, row, col, X, y, features):
+    # histogram
+    if row == col:
+        data = X[:, row]
+        axes[row, col].hist(data, rwidth=0.9)
+
+    # scatter plot
+    else:
+        axes[row, col].scatter(X[:, col], X[:, row], c=y, alpha=0.5)
+
+    # labels
+    if col == 0:
+        axes[row, col].set_ylabel(features[row], fontsize=20)
+    if row == len(features)-1:
+        axes[row, col].set_xlabel(features[col], fontsize=20)
+
+
+def iris_pairplot_clean():
+    # code refactoring
+    iris_X, iris_y, feature_names, species, n_feature, n_species = get_iris()
+
+    fig, axes = plt.subplots(nrows=n_feature, ncols=n_feature, figsize=(16, 16))
+
+    for i in range(n_feature):
+        for j in range(n_feature):
+            single_pair2(axes, i, j, iris_X, iris_y, feature_names)
+
+
 if __name__ == '__main__':
     # iris_visualization1()
     # histogram_test()
-    iris_pairplot()
+    # iris_pairplot()
+    iris_pairplot_clean()
     plt.show()
 
