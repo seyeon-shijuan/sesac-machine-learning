@@ -16,6 +16,7 @@ from sklearn import datasets
 from sklearn.model_selection import train_test_split
 
 
+
 def perceptron_test():
     input_data = np.array([[2, 3], [5, 1]])
     print(input_data)
