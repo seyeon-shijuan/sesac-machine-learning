@@ -138,9 +138,9 @@ def code6_knn_dataset(n_classes, n_data):
     return data, target_cls, centroids
 
 
-def code7_euclidean_distances_legacy():
+def code7_euclidean_distances_legacy(X, y, centroids):
     # KNN: 테스트 데이터와 dataset에 들어있는 샘플들 사이의 거리 구하기
-    X, y, centroids = code6_knn_dataset(n_classes=4, n_data=100)
+    # X, y, centroids = code6_knn_dataset(n_classes=4, n_data=100)
     X_te = X[0]
     # euclidean_d = list()
     # for data in X:
@@ -162,77 +162,78 @@ def code7_euclidean_distances_legacy():
     return X, y, centroids, X_te, euclidean_d
 
 
-def code7_euclidean_distances():
+def code7_euclidean_distances(X, X_te=None):
     # KNN: 테스트 데이터와 dataset에 들어있는 샘플들 사이의 거리 구하기
-    X, y, centroids = code6_knn_dataset(n_classes=4, n_data=100)
-    X_te = X[0]
+    if X_te is None:
+        X_te = X[0]
 
-    euclidean_d = np.sqrt(np.sum((X - X_te)**2, axis=1))
-    return X, y, centroids, X_te, euclidean_d
+    e_dists = np.sqrt(np.sum((X - X_te)**2, axis=1))
+    return X_te, e_dists
 
 
-def code8_classify(K=None):
+def code8_classify(X, y, K, X_te=None):
     # test data가 어떤 클래스에 속하는지 구하기
-    if K is None:
-        K = 6
-    else:
-        K += 1
-
-    X, y, centroids, X_te, e_dists = code7_euclidean_distances()
+    K += 1
+    X_te, e_dists = code7_euclidean_distances(X, X_te)
     ascending_idx = np.argsort(e_dists)
 
-    # make full data
-    e = e_dists.reshape(-1, 1)
-    y = y.reshape(-1, 1)
-    full_data = np.hstack((X, e, y))
-    full_data_ascd = full_data[ascending_idx]
-
     # get k values and predict
-    uniques, cnts = np.unique(full_data_ascd[:K, -1], return_counts=True)
+    knn_X = X[ascending_idx][:K]
+    knn_y = y[ascending_idx][:K]
+    uniques, cnts = np.unique(knn_y, return_counts=True)
     uniques = uniques.astype(dtype=np.int64)
     most_frequent = np.argmax(cnts)
     y_hat = uniques[most_frequent]
-
-    # print(y_hat) # 0
-    results = dict()
-    results["K"] = K
-    results["X"] = X
-    results["y"] = y
-    results["X_te"] = X_te
-    results["e_dists"] = e_dists
-    results["full_data"] = full_data
-    results["K_data"] = full_data_ascd[:K, :]
-    results["unique_cnts"] = (uniques, cnts)
-    results["centroids"] = centroids
-    results["y_hat"] = y_hat
-
-    return results
+    return knn_X, knn_y, y_hat
 
 
-def code9_knn_visualization_tmp():
-    prediction = code8_classify(5)
-    K = prediction["K"]
-    X = prediction["X"]
-    y_hat = prediction["y_hat"]
-    k_data = prediction["K_data"]
-    X_te = prediction["X_te"]
+def get_decision_boundary(x1_lim, x2_lim, X, y, K):
+    x1 = np.linspace(x1_lim[0], x1_lim[1], 100)
+    x2 = np.linspace(x2_lim[0], x2_lim[1], 100)
+
+    X1, X2 = np.meshgrid(x1, x2)
+    grid = np.column_stack((X1.flatten(), X2.flatten()))
+    pred_knn = list()
+
+    for g in grid:
+        _, _, y_hat = code8_classify(X, y, K, X_te=g)
+        pred_knn.append(y_hat)
+
+    pred_knn = np.array(pred_knn)
+    return grid, pred_knn
+
+
+def code9_knn_visualization(X, y, K, X_te):
+    palette = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
+    knn_X, knn_y, y_hat = code8_classify(X, y, K, X_te)
 
     fig, ax = plt.subplots(figsize=(7, 7))
+
     # all data
-    ax.scatter(x=prediction["X"][:, 0], y=prediction["X"][:, 1], c=prediction["y"], alpha=0.5)
+    ax.scatter(x=X[:, 0], y=X[:, 1], c=y, alpha=0.5)
 
     # to predict
     ax.scatter(x=X_te[0], y=X_te[1], marker="*", s=300, color="dodgerblue")
     ax.text(x=X_te[0]+1, y=X_te[1], s=f"class {y_hat}", color="hotpink", size=15)
 
     # k nearest data
-    for i in range(len(k_data)):
-        curr_x = k_data[i, 0]
-        curr_y = k_data[i, 1]
-        ax.plot([X_te[0], curr_x], [X_te[1], curr_y], 'k--', color="dodgerblue")
+    for i in range(len(knn_X)):
+        ax.plot([X_te[0], knn_X[i, 0]], [X_te[1], knn_X[i, 1]], 'k--', color="dodgerblue")
+
+    # decision boundary
+    x1_lim, x2_lim = ax.get_xlim(), ax.get_ylim()
+    grid, pred_knn = get_decision_boundary(x1_lim, x2_lim, X, y, K)
+
+    target_cls = list(set(y))
+    for i in target_cls:
+        target_X = grid[pred_knn == i]
+        ax.scatter(target_X[:, 0], target_X[:, 1], alpha=0.05)
 
 
-
+def classify_knn(n_classes, n_data, K):
+    X, y, centroids = code6_knn_dataset(n_classes, n_data)
+    X_te = X[0]
+    code9_knn_visualization(X, y, K, X_te)
 
 
 if __name__ == '__main__':
@@ -246,13 +247,10 @@ if __name__ == '__main__':
     # code6_knn_dataset()
     # code7_euclidean_distances()
     # code8_classify()
-    code9_knn_visualization_tmp()
-
-
-
+    # code9_knn_visualization_tmp()
+    classify_knn(n_classes=4, n_data=100, K=5)
     plt.show()
 
-
-# 첫번째를 test dataset으로
-# 테스트와 전체 샘플 간의 거리 계산 (euclidean distance)
-# k개 추출
+    # 첫번째를 test dataset으로
+    # 테스트와 전체 샘플 간의 거리 계산 (euclidean distance)
+    # k개 추출
