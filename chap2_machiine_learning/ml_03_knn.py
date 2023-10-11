@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.cm as cm
 
 
 def code1_normal_histogram():
@@ -116,11 +117,6 @@ def code5_targets():
     print(data.shape)
 
 
-def get_data_from_centroid(centroid, n_data):
-    data = np.random.normal(loc=centroid, scale=3, size=(n_data, 2))
-    return data
-
-
 def code6_knn_dataset(n_classes, n_data):
     np.random.seed(8)
     centroids = np.array([np.random.uniform(low=-10, high=10, size=(2,)) for x in range(n_classes)])
@@ -136,30 +132,6 @@ def code6_knn_dataset(n_classes, n_data):
         data = np.vstack([data, curr_dataset])
 
     return data, target_cls, centroids
-
-
-def code7_euclidean_distances_legacy(X, y, centroids):
-    # KNN: 테스트 데이터와 dataset에 들어있는 샘플들 사이의 거리 구하기
-    # X, y, centroids = code6_knn_dataset(n_classes=4, n_data=100)
-    X_te = X[0]
-    # euclidean_d = list()
-    # for data in X:
-    #     curr_sum = 0
-    #     for i in range(len(data)):
-    #         curr_sum += (data[i] - X_te[i]) ** 2
-    #
-    #     curr_sum **= 0.5
-    #     euclidean_d.append(curr_sum)
-    #
-    # euclidean_d = np.array(euclidean_d)
-
-    euclidean_d = np.sqrt(np.sum((X - X_te)**2, axis=1))
-
-    # print("X: ", X[:10])
-    # print("y(cls): ", y[:10])
-    # print("euclidean distance: ",euclidean_d[:10])
-
-    return X, y, centroids, X_te, euclidean_d
 
 
 def code7_euclidean_distances(X, X_te=None):
@@ -204,13 +176,13 @@ def get_decision_boundary(x1_lim, x2_lim, X, y, K):
 
 
 def code9_knn_visualization(X, y, K, X_te):
-    palette = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
+    class_colors = ['#FF5733', '#FFA500', '#008000', '#FF69B4']
     knn_X, knn_y, y_hat = code8_classify(X, y, K, X_te)
 
     fig, ax = plt.subplots(figsize=(7, 7))
 
     # all data
-    ax.scatter(x=X[:, 0], y=X[:, 1], c=y, alpha=0.5)
+    ax.scatter(x=X[:, 0], y=X[:, 1], c=[class_colors[label] for label in y], alpha=0.5)
 
     # to predict
     ax.scatter(x=X_te[0], y=X_te[1], marker="*", s=300, color="dodgerblue")
@@ -218,7 +190,7 @@ def code9_knn_visualization(X, y, K, X_te):
 
     # k nearest data
     for i in range(len(knn_X)):
-        ax.plot([X_te[0], knn_X[i, 0]], [X_te[1], knn_X[i, 1]], 'k--', color="dodgerblue")
+        ax.plot([X_te[0], knn_X[i, 0]], [X_te[1], knn_X[i, 1]], color="dodgerblue")
 
     # decision boundary
     x1_lim, x2_lim = ax.get_xlim(), ax.get_ylim()
@@ -227,7 +199,7 @@ def code9_knn_visualization(X, y, K, X_te):
     target_cls = list(set(y))
     for i in target_cls:
         target_X = grid[pred_knn == i]
-        ax.scatter(target_X[:, 0], target_X[:, 1], alpha=0.05)
+        ax.scatter(target_X[:, 0], target_X[:, 1], alpha=0.04, color=class_colors[i])
 
 
 def classify_knn(n_classes, n_data, K):
@@ -237,7 +209,7 @@ def classify_knn(n_classes, n_data, K):
 
 
 if __name__ == '__main__':
-    np.random.seed(22)
+    # np.random.seed(22)
     # code1_normal_histogram()
     # code2_dataset_1cluster()
     # code3_random_centroid()
