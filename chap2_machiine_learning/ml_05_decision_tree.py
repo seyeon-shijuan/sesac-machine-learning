@@ -1,5 +1,5 @@
 import numpy as np
-
+import pandas as pd
 
 def get_dataset():
     # x - stream, slope, elevation / y - vegetation
@@ -195,7 +195,133 @@ def multi_class_entropy_h2():
     # h2층의 피처 slope에서 steep의 entropy:  1.0
 
 
+'''IGR'''
 
+def entropy(p: list):
+    tot = sum(p)
+    p = np.array(p).astype(dtype='float64')
+    p /= tot
+    entropy = -np.sum(p * np.log2(p))
+    return entropy
+
+
+def information_gain(parent, child):
+    parent_entropy = entropy(parent)
+    l_parent = float(sum(parent))
+
+    partition_entropy = []
+
+    for ele in child:
+        l_child = float(sum(ele))
+        part_ent = entropy(ele)
+
+        curr_ent = l_child / l_parent * part_ent
+        partition_entropy.append(curr_ent)
+
+    final_entropy = sum(partition_entropy)
+    ig = parent_entropy - final_entropy
+
+    return ig
+
+
+def get_igr(parent, child):
+    ig = information_gain(parent=parent, child=child)
+    child_all = [sum(x) for x in child]
+    iv = entropy(child_all)
+    igr = ig / iv
+    return igr
+
+
+def test_routine():
+    parent = [7, 3]
+    child = [[6], [1, 3]]
+    igr = get_igr(parent=parent, child=child)
+    print(igr)
+
+    # parent = [7, 3]
+    # child = [[1], [1], [1], [1], [1], [1], [1], [1], [1, 1]]
+    # ig = information_gain(parent=parent, child=child)
+    # print("ig: ", ig)
+
+
+def get_igr_idx(X, y, col_names):
+    ig_list = list()
+    h_list = list()
+    parent_uniques, parent_cnts = np.unique(y, return_counts=True)
+
+    for i in range(X.shape[1]):
+        curr = X[:, i]
+        uq = np.unique(curr)
+        children = list()
+        for ele in uq:
+            ele_idx = (curr == ele)
+            curr_y = y[ele_idx]
+            uniq, cnts = np.unique(curr_y, return_counts=True)
+            # child = [[6], [1, 3]]
+            children.append(cnts)
+
+        e = information_gain(parent=parent_cnts, child=children)
+        ig_list.append(e)
+
+    # get iv by features
+    for i in range(X.shape[1]):
+        curr = X[:, i]
+        uniques, cnts = np.unique(curr, return_counts=True)
+
+        curr_entropy = entropy(cnts)
+        h_list.append(curr_entropy)
+
+    gr_list = np.array(ig_list) / np.array(h_list)
+    print("col: ", col_names)
+    print("gr: ", gr_list)
+    max_idx = np.argmax(gr_list)
+
+    return max_idx
+
+
+def decision_tree_by_igr(data, col_names):
+    X = data[:, 1:-1]
+    y = data[:, -1]
+    col_names = col_names[1:-1]
+
+    # root node separation
+    max_idx = get_igr_idx(X, y, col_names)
+    print(f"h1 node: idx {max_idx} {col_names[max_idx]}")
+    # flat-fin, moderate-fin, steep-3types
+
+    print("=" * 30)
+
+    # data filtration by slope - steep
+    to_remain = (X[:, max_idx] == 'steep')
+    X1 = X[to_remain]
+    X1 = np.delete(X1, max_idx, axis=1)
+    y1 = y[to_remain]
+    col_names.pop(max_idx)
+
+    # h1 separation
+    max_idx = get_igr_idx(X1, y1, col_names)
+    print(f"h2 node: idx {max_idx} {col_names[max_idx]}")
+    # low-filled with chapparal, medium-2types, high-fin, highest-fin
+
+    print("=" * 30)
+
+    # data filtration by elevation - medium
+    to_remain = (X1[:, max_idx] == 'medium')
+    X2 = X1[to_remain]
+    X2 = np.delete(X2, max_idx, axis=1)
+    y2 = y1[to_remain]
+    col_names.pop(max_idx)
+
+    # h2 separation
+    max_idx = get_igr_idx(X2, y2, col_names)
+    print(f"h3 node: idx {max_idx} {col_names[max_idx]}")
+
+
+def main_routine():
+    df = pd.read_csv('../data/vegetation.csv')
+    col_names = df.columns.to_list()
+    data = df.to_numpy()
+    decision_tree_by_igr(data, col_names)
 
 
 
@@ -203,8 +329,21 @@ if __name__ == '__main__':
     # entropy_test()
     # entropy_test2()
     # entropy_test3()
-    # X, y = get_dataset()
     # get_entropy(X[:, 0], y)
     # entropy_test4()
     # multi_class_entropy_h1()
-    multi_class_entropy_h2()
+    # multi_class_entropy_h2()
+    # X, y = get_dataset()
+    # get_entropy(iv = [1/10, 1/10, 1/10, 1/10, 1/10, 1/10, 1/10, 1/10, 1/10, 2/10])
+    # get_entropy(iv=[1/4, 3/4])
+    # test_routine()
+    # decision_tree_by_igr()
+    main_routine()
+
+
+
+
+
+
+
+
