@@ -1,0 +1,8 @@
+ID,STREAM,SLOPE,ELEVATION,VEGETATION
+2,TRUE,moderate,300,riparian
+4,FALSE,steep,1200,chapparal
+3,TRUE,steep,1500,riparian
+7,TRUE,steep,3000,chapparal
+1,FALSE,steep,3900,chapparal
+5,FALSE,flat,4450,conifer
+6,TRUE,steep,5000,conifer
