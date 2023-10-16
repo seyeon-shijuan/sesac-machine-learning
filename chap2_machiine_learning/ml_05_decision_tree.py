@@ -232,18 +232,6 @@ def get_igr(parent, child):
     return igr
 
 
-def test_routine():
-    parent = [7, 3]
-    child = [[6], [1, 3]]
-    igr = get_igr(parent=parent, child=child)
-    print(igr)
-
-    # parent = [7, 3]
-    # child = [[1], [1], [1], [1], [1], [1], [1], [1], [1, 1]]
-    # ig = information_gain(parent=parent, child=child)
-    # print("ig: ", ig)
-
-
 def get_igr_idx(X, y, col_names):
     ig_list = list()
     h_list = list()
@@ -319,6 +307,7 @@ def decision_tree_by_igr(data, col_names):
 
 def main_routine():
     df = pd.read_csv('../data/vegetation.csv')
+    print(df)
     col_names = df.columns.to_list()
     data = df.to_numpy()
     decision_tree_by_igr(data, col_names)
