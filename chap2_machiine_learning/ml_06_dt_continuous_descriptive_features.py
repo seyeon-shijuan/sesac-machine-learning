@@ -55,6 +55,32 @@ def get_ig_idx(X, y, col_names):
     return max_idx
 
 
+def get_subset(X, y, max_idx, col_names):
+    print("==========get subset==========")
+    to_remain = (X[:, max_idx])
+
+    # get kind list of to_remain
+    uniques = np.unique(to_remain)
+
+    # split data
+    subset_dict = dict()
+    for ele in uniques:
+        curr_to_remain = np.array([True if x == ele else False for x in to_remain])
+        X1 = X[curr_to_remain]
+        X1 = np.delete(X1, max_idx, axis=1)
+        y1 = y[curr_to_remain]
+        subset_dict[ele] = (X1, y1)
+
+        # check if further classification is required
+        uq_y1 = len(np.unique(y1))
+        print(f"num of {ele} node: {uq_y1} {'fin' if uq_y1 == 1 else 'continue'}")
+
+    col_names.pop(max_idx)
+    print("="*30)
+
+    return subset_dict, col_names
+
+
 def decision_tree_continuous(X, y, col_names, thresholds):
     # 마지막 column만 coontinuous descriptive features인 경우의 decision tree 계산
     continuous = np.array(X[:, -1], dtype=float)
@@ -70,33 +96,40 @@ def decision_tree_continuous(X, y, col_names, thresholds):
         categorized = np.append(categorized, curr_tf.reshape(-1, 1), axis=1)
 
     X_tot = np.append(X[:, :-1], categorized, axis=1)
-    # columns_to_change = [0, 2, 3, 4, 5]
-    # X_tot[:, columns_to_change] = X_tot[:, columns_to_change].astype(bool)
-
-    # X_tot[:, [0, 2, 3, 4, 5]].astype('bool')
-
     col_names_tot = col_names[:-1] + [col_names[-1] + str(th) for th in thresholds]
 
+    ''' h1 ig test '''
     max_idx = get_ig_idx(X=X_tot, y=y, col_names=col_names_tot)
     print(f"h1 node: idx {max_idx} {col_names_tot[max_idx]}")
-    # h1 node: idx 3 ELEVATION2250
+    # h1 node: idx 5 ELEVATION4175
 
-    # h2-1 node separation
-    # data filtration by ELEVATION2250 - True
-    to_remain = (X_tot[:, max_idx])
-    X1 = X_tot[to_remain]
-    X1 = np.delete(X1, max_idx, axis=1)
-    y1 = y[to_remain]
-    col_names.pop(max_idx)
+    # data filtration by ELEVATION4175
+    subset_dict, col_names = get_subset(X_tot, y, max_idx, col_names_tot)
 
+    ''' h2-1(True) ig test '''
+    X2 = subset_dict['True'][0]
+    y2 = subset_dict['True'][1]
+    max_idx = get_ig_idx(X2, y2, col_names)
+    print(f"h2-1 node: idx {max_idx} {col_names[max_idx]}")
 
+    # data filtration by STREAM
+    subset_dict, col_names = get_subset(X2, y2, max_idx, col_names)
+
+    ''' h3-1(True) ig test '''
+    X3 = subset_dict['True'][0]
+    y3 = subset_dict['True'][1]
+    max_idx = get_ig_idx(X3, y3, col_names)
+    print(f"h3-1 node: idx {max_idx} {col_names[max_idx]}")
+
+    # data filtration by ELEVATION2250
+    subset_dict, col_names = get_subset(X3, y3, max_idx, col_names)
 
 
 def main_routine():
     df = pd.read_csv('../data/vegetation_new.csv')
     my_np = df.to_numpy()
     data = my_np.tolist()
-    print(data)
+    # print(data)
 
     col_names = ['ID', 'STREAM', 'SLOPE', 'ELEVATION', 'VEGETATION']
     data = [[2, True, 'moderate', 300, 'riparian'],
@@ -107,15 +140,15 @@ def main_routine():
             [5, False, 'flat', 4450, 'conifer'],
             [6, True, 'steep', 5000, 'conifer']]
 
-
     data = np.array(data)
     X = data[:, 1:-1]
     y = data[:, -1]
 
-    threshold = [750, 2250, 3450, 4725]
-
+    threshold = [750, 1350, 2250, 4175]
+    print("=" * 40)
+    print("decision tree classification started")
+    print("=" * 40)
     decision_tree_continuous(X, y, col_names[1:-1], threshold)
-
 
 
 if __name__ == '__main__':

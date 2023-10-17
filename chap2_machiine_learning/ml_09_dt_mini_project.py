@@ -6,8 +6,7 @@ from sklearn.datasets import load_diabetes
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.tree import DecisionTreeClassifier
-from sklearn import tree
-
+from sklearn.tree import plot_tree
 
 def dt_1():
     # scikit-learn load_diabetes로 regression decision tree 그리기
@@ -95,11 +94,13 @@ def information_gain(parent, child):
 
 def get_ig_idx(X, y, col_names):
     ig_list = list()
+    n_unique_list = list()
     parent_uniques, parent_cnts = np.unique(y, return_counts=True)
 
     for i in range(X.shape[1]):
         curr = X[:, i]
         uq = np.unique(curr)
+        n_unique_list.append(len(uq))
         children = list()
         for ele in uq:
             ele_idx = (curr == ele)
@@ -116,49 +117,59 @@ def get_ig_idx(X, y, col_names):
     print("gr: ", ig_list)
     max_idx = np.argmax(ig_list)
 
-    return max_idx
+    return max_idx, n_unique_list[max_idx]
 
 
-def decision_tree_comparison(X, y, col_names):
-    max_idx = get_ig_idx(X=X, y=y, col_names=col_names)
-    print(f"h1 node: idx {max_idx} {col_names[max_idx]}")
-    # h1 node: idx 0 age
-
-
-    # # h2-1 node separation
-    # # data filtration by age - yes
-    # uniques = np.unique(X[:, max_idx])
-    # to_remain = (X[:, max_idx] == 0)
-    # X1 = X[to_remain]
-    # X1 = np.delete(X1, max_idx, axis=1)
-    # y1 = y[to_remain]
-    # col_names.pop(max_idx)
-
+def decision_tree_root(X, y, col_names):
+    max_idx, n_uniques = get_ig_idx(X=X, y=y, col_names=col_names)
+    print(f"h1 node: idx {max_idx}({col_names[max_idx]}), n_uniques: {n_uniques}")
     return max_idx
 
 
 def dt_3():
     # dataset preparation
     df = pd.read_csv("../data/register_golf_club.csv", index_col=0)
-    print(df.columns.to_list())
+    # print(df.columns.to_list())
     # ['age', 'income', 'married', 'credit_score', 'register_golf_club']
     cols = df.columns.to_list()[:-1]
     X = df.iloc[:, :-1]
     y = df.iloc[:, -1]
 
-    max_idx = decision_tree_comparison(np.array(X), np.array(y), cols)
-
-    DecisionTreeClassifier()
+    max_idx = decision_tree_root(np.array(X), np.array(y), cols)
 
 
 
-    print('here')
+def dt_sklearn():
+    # 데이터 불러오기
+    data = pd.read_csv('../data/register_golf_club.csv')
 
+    # 특성과 타겟 분리
+    X = data.drop('register_golf_club', axis=1)
+    y = data['register_golf_club']
 
+    # # 특성에 대한 One-Hot Encoding 수행
+    X_encoded = X.copy()
+    for column in X.columns:
+        X_encoded[column] = X[column].astype('category').cat.codes
 
+    # 결정 트리 모델 생성
+    clf = DecisionTreeClassifier()
+
+    # 모델 훈련
+    clf.fit(X_encoded, y)
+
+    # 첫 번째 노드 (루트 노드) 정보 확인
+    root_node = clf.tree_
+    print(f"h1 node: idx {root_node.feature[0]}({X.columns[root_node.feature[0]+1]}), level:{root_node.max_depth}, threshold: {root_node.threshold[0]} ")
+
+    # 결정 트리 시각화
+    plt.figure(figsize=(15, 10))
+    plot_tree(clf, filled=True, feature_names=X_encoded.columns, class_names=y.unique())
+    plt.show()
 
 
 if __name__ == '__main__':
     # dt_1()
     # dt_2()
     dt_3()
+    dt_sklearn()

@@ -3,8 +3,6 @@ import numpy as np
 
 
 def get_variance_idx(X, y, col_names):
-    tmp = X.shape[1]
-
     var_by_column_list = list()
 
     # column 순서 대로 순회
@@ -34,17 +32,16 @@ def get_variance_idx(X, y, col_names):
         fin_val = np.sum(var_list * weight_list)
         var_by_column_list.append(fin_val)
 
-
-
     min_idx = np.argmin(var_by_column_list)
-    print("현재 레이어에서 분산이 적은 column: ", col_names[min_idx])
+    print("argmin(variance) column in current layer: ", col_names[min_idx])
 
     return min_idx
+
 
 def continuous_decision_tree():
     df = pd.read_csv('../data/season.csv')
     data = df.to_numpy().tolist()
-    print(data)
+    # print(data)
     data = [[1, 'winter', False, 800],
             [2, 'winter', False, 826],
             [3, 'winter', True, 900],
@@ -65,6 +62,7 @@ def continuous_decision_tree():
     col_names = ['SEASON', 'DAY']
 
     min_idx = get_variance_idx(X, y, col_names)
+    print(f"{min_idx = }")
 
     # SEASON
     spring = np.where(X[:, 0] == "spring")
@@ -87,12 +85,7 @@ def continuous_decision_tree():
     h1_autumn_idx = get_variance_idx(X_autumn, y_autumn, col_names=['DAY'])
     h1_winter_idx = get_variance_idx(X_winter, y_winter, col_names=['DAY'])
 
-    # get_variance_idx()
-
-    print('here')
-
-
-
 
 if __name__ == '__main__':
     continuous_decision_tree()
+
