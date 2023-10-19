@@ -125,7 +125,9 @@ def play_tennis_test():
     # 1. prior
     prior_probs = [get_likelihood(df, x) for x in range(df.shape[1])]
     prior = prior_probs[-1]
-    likelihoods = prior_probs[:-1]
+    X = prior_probs[:-1]
+
+
 
     df.columns
 
