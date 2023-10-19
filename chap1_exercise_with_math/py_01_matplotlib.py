@@ -224,10 +224,11 @@ def my_scatter():
     # ax.scatter(x_data, y_data, s=s_arr, c=c_arr)
 
     ax.scatter(x_data, y_data, s=s_arr, c=c_arr, alpha=0.3)
+    fig.tight_layout()
 
 
 if __name__ == '__main__':
-    # base_mat()
+    base_mat()
     # my_twinx()
     # txt_alignment()
     # align_test()
@@ -235,7 +236,7 @@ if __name__ == '__main__':
     # tick_test()
     # named_colors()
     # named_colors2()
-    my_scatter()
+    # my_scatter()
     plt.show()
 
 

@@ -98,6 +98,8 @@ def e122():
     mean = (scores[0] + scores[1] + scores[2]) / n_student
     print("score mean: ", mean)
 
+###################
+
 
 def e126():
     # 리스트로 분산과 표준편차 구하기

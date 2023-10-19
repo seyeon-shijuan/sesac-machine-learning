@@ -1,4 +1,5 @@
 def e147():
+    # mean subtraction
     math_scores = [40, 60, 80]
     english_scores = [30, 40, 50]
 
@@ -34,10 +35,12 @@ def e147():
     for i in math_scores:
         tmp += i
 
-    print(tmp / n_student)
+    print(f"{tmp = }, {n_student = }")
+    print(f"{tmp / n_student = }")
 
 
 def e149():
+    # 분산, 표준편차
     scores = [10, 20, 30]
     n_student = len(scores)
     score_sum, score_square_sum = 0, 0
@@ -54,11 +57,12 @@ def e149():
     variance = mean_of_square - square_of_mean
     std = variance**0.5
 
-    print("variancee: ", variance)
+    print("variance: ", variance)
     print("standard deviation: ", std)
 
 
 def e150():
+    # 평균과 표준 분산편차
     scores = [10, 20, 30]
     n_student = len(scores)
     score_sum, score_square_sum = 0, 0
@@ -102,7 +106,7 @@ def e150():
 
 
 def e151():
-    # 분산과 표준편차
+    # 평균, 분산과 표준편차
     math_scores, english_scores = [50, 60, 70], [30, 40, 50]
     n_student = len(math_scores)
 
@@ -160,6 +164,7 @@ def standardize(val):
 
 
 def e152():
+    # standardization
     math_scores, english_scores = [50, 60, 70], [30, 40, 50]
     n_student = len(math_scores)
     math_sum, math_square, math_mean = get_sum_square_mean(math_scores)
@@ -217,6 +222,7 @@ def e154(v1=None):
 
 
 def e155():
+    # unit(1) 기준 norm 변경
     v1 = [1, 2, 3]
     norm = e154(v1)
     print("initial norm: ", norm)
@@ -241,6 +247,7 @@ def e157():
 
 
 def e158():
+    # MSE
     predictions = [10, 20, 30]
     labels = [10, 25, 40]
 
@@ -255,6 +262,7 @@ def e158():
 
 
 def e159():
+    # 0 ~ 4 까지 숫자 개수 카운트
     numbers = [0, 2, 4, 2, 1, 4, 3, 1, 2, 3, 4, 1, 2, 3, 4]
     number_cnt = [0, 0, 0, 0, 0]
 
@@ -265,12 +273,14 @@ def e159():
 
 
 def e160():
+    # if 문
     score = 60
     if score > 50:
         print("pass")
 
 
 def e161():
+    # if else 문
     score = 40
     cutoff = 50
 
@@ -281,6 +291,7 @@ def e161():
 
 
 def e162():
+    # if문을 사용하여 초를 분-초 단위로 변환
     seconds = 200
 
     if seconds >= 60:
@@ -294,6 +305,7 @@ def e162():
 
 
 def e163(seconds):
+    # if문을 사용하여 초를 시간-분-초로 변환
     if seconds is None:
         seconds = 5000
 
@@ -316,6 +328,7 @@ def e163(seconds):
 
 
 def e164():
+    # if문을 사용하여 짝수/홀수 구분
     number = 10
     if number % 2 == 0:
         print('even')
@@ -325,6 +338,7 @@ def e164():
 
 
 def e165():
+    # if문을 사용하여 대소 비교
     num1, num2 = 10, 10
 
     if num1 > num2:
@@ -338,6 +352,7 @@ def e165():
 
 
 def e169():
+    # 통과와 낙제 점수 취득자의 평균 구하기
     scores = [20, 50, 10, 60, 90]
     cutoff = 50
 
@@ -360,6 +375,7 @@ def e169():
 
 
 def e170():
+    # 리스트 값의 짝 홀수 및 정수 여부 구하기
     numbers = list()
 
     for num in range(10):
@@ -394,6 +410,7 @@ def e171():
 
 
 def e172():
+    # 최댓값, 최솟값 구하기
     scores = [60, 40, 70, 20, 30]
     M, m = 0, 100
 
@@ -409,6 +426,7 @@ def e172():
 
 
 def e173():
+    # 최댓값 최솟값 구하기
     scores = [-20, 60, 40, 70, 120]
 
     # method 1
@@ -488,6 +506,7 @@ def e175():
 
 
 def e176():
+    # sort (desc)
     scores = [40, 20, 30, 10, 50]
     sorted_scores = list()
 
@@ -512,34 +531,62 @@ def e176():
         print("remaining scores: ", scores)
         print("sorted scores: ", sorted_scores, '\n')
 
+
 if __name__ == '__main__':
-    # e147()
-    # e149()
-    # e150()
-    # e151()
-    # e152()
-    # e153()
-    # e154()
-    # e155()
-    # e157()
-    # e158()
-    # e159()
-    # e160()
-    # e161()
-    # e162()
-    # e163(5000)
-    # e163(200)
-    # e163(45)
-    # e164()
-    # e165()
-    # e169()
-    # e170()
-    # e171()
-    # e172()
-    # e173()
-    # e174()
-    # e175()
+    e147()
+    print("="*30)
+    e149()
+    print("=" * 30)
+    e150()
+    print("=" * 30)
+    e151()
+    print("=" * 30)
+    e152()
+    print("=" * 30)
+    e153()
+    print("=" * 30)
+    e154()
+    print("=" * 30)
+    e155()
+    print("=" * 30)
+    e157()
+    print("=" * 30)
+    e158()
+    print("=" * 30)
+    e159()
+    print("=" * 30)
+    e160()
+    print("=" * 30)
+    e161()
+    print("=" * 30)
+    e162()
+    print("=" * 30)
+    e163(5000)
+    print("=" * 30)
+    e163(200)
+    print("=" * 30)
+    e163(45)
+    print("=" * 30)
+    e164()
+    print("=" * 30)
+    e165()
+    print("=" * 30)
+    e169()
+    print("=" * 30)
+    e170()
+    print("=" * 30)
+    e171()
+    print("=" * 30)
+    e172()
+    print("=" * 30)
+    e173()
+    print("=" * 30)
+    e174()
+    print("=" * 30)
+    e175()
+    print("=" * 30)
     e176()
+
 
     print("fin")
 

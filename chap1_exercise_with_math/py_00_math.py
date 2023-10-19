@@ -1,4 +1,5 @@
 def e109():
+    # mean
     score1 = 10
     score2 = 20
     score3 = 30
@@ -49,6 +50,7 @@ def e111():
 
 
 def e112():
+    # standard deviation
     score1 = 10
     score2 = 20
     score3 = 30
@@ -62,10 +64,11 @@ def e112():
     score_variance = mean_of_square - square_of_mean
     score_std = score_variance ** 0.5
 
-    # ** 0.5 루트인듯?
+    # ** 0.5 루트
     print("mean: ", score_mean)
     print("variance: ", score_variance)
     print("standard deviation: ", score_std)
+
 
 def e113():
     score1 = 10
@@ -83,15 +86,17 @@ def e113():
     print("mean: ", score_mean)
     print("standard deviation: ", score_std)
 
-    # score1 =
 
 
 if __name__ == '__main__':
-    # e109()
-    # e110()
-    # e111()
-    # e112()
-    e113()
+    e109()
+    print("="*30)
+    e110()
+    print("=" * 30)
+    e111()
+    print("=" * 30)
+    e112()
+    print("=" * 30)
 
 
 
