@@ -146,8 +146,8 @@ if __name__ == '__main__':
     # bayesian_table_test()
     # single_bayes_test()
     # stacked_bayes_test()
-    # balls_in_boxes_test()
-    play_tennis_test()
+    balls_in_boxes_test()
+    # play_tennis_test()
 
 
 
