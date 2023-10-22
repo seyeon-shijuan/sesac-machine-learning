@@ -71,7 +71,6 @@ def gaussian_naive_bayes():
         print(f"mean and std of {col}: ", x_mean_std_by_cls)
 
         # gaussian distribution
-        x_gs_by_cls = list()
         min_max_by_cls = pd.DataFrame(columns=['min', 'max'])
 
         for i, c in enumerate(x_by_cls):
@@ -79,13 +78,6 @@ def gaussian_naive_bayes():
             curr_min = c.iloc[:, 0].min()
             curr_max = c.iloc[:, 0].max()
             min_max_by_cls.loc[i] = [curr_min, curr_max]
-
-        # concatenate by cls
-        concat_cls = list()
-        for x1, x2 in zip(x_by_cls, x_gs_by_cls):
-            curr_cls = pd.concat([x1.iloc[:, 0], x2.iloc[:, :]], axis=1)
-            curr_cls.columns.values[1] = 'Gaussian'
-            concat_cls.append(curr_cls)
 
         # gaussian distribution(likelihood) for test data
         te_gs_by_cls = [(cls, get_gaussian_dist(test_data[col], mu, sigma)) for cls, mu, sigma in x_mean_std_by_cls]
