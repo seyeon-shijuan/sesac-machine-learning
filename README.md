@@ -13,6 +13,13 @@
 	- matrix addition, matrix multiplication, transposed matrix
 	- Python 자료구조 확장(변수, 리스트, nested list) 하며 순수 파이썬으로 구현
 
-2. [선형대수와 통계학으로 배우는 머신러닝 with 파이썬 코드 실습 (Self Study)](https://github.com/seyeon-shijuan/sesac-machine-learning/tree/master/%EC%84%A0%ED%98%95%EB%8C%80%EC%88%98%EC%99%80_%ED%86%B5%EA%B3%84%ED%95%99%EC%9C%BC%EB%A1%9C_%EB%B0%B0%EC%9A%B0%EB%8A%94_%EB%A8%B8%EC%8B%A0%EB%9F%AC%EB%8B%9D_with_%ED%8C%8C%EC%9D%B4%EC%8D%AC)
+2. [머신러닝](https://github.com/seyeon-shijuan/sesac-machine-learning/tree/master/chap2_machiine_learning)
+	- KNN
+	- K-means Clustering
+	- Decision Tree : Basic, Continuous descriptive Features Decision Tree, Continuous Target Decision Tree
+	- Naive Bayes : Bayes Theorem, Basic Naive Bayes, multiple classes Gaussian, Gaussian Naive Bayes
+
+3. [선형대수와 통계학으로 배우는 머신러닝 with 파이썬 코드 실습 (Self Study)](https://github.com/seyeon-shijuan/sesac-machine-learning/tree/master/%EC%84%A0%ED%98%95%EB%8C%80%EC%88%98%EC%99%80_%ED%86%B5%EA%B3%84%ED%95%99%EC%9C%BC%EB%A1%9C_%EB%B0%B0%EC%9A%B0%EB%8A%94_%EB%A8%B8%EC%8B%A0%EB%9F%AC%EB%8B%9D_with_%ED%8C%8C%EC%9D%B4%EC%8D%AC)
 	- 머신러닝 데이터 처리, 모델 평가, 지도학습
  
+
