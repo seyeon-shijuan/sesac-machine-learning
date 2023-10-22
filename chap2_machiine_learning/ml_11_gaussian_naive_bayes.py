@@ -22,10 +22,7 @@ def classify_data(test_data, te_likely_by_cls):
     print(f"test data({test_data.to_list()}) is classified as {prod}")
 
 
-def get_grid_data(min_max_by_cls, x_mean_std_by_cls):
-    # linspace data for plotting
-    x_min = min_max_by_cls.iloc[:, 0].min()
-    x_max = min_max_by_cls.iloc[:, 1].max()
+def get_grid_data(x_min, x_max, x_mean_std_by_cls):
     x_grid = np.linspace(x_min, x_max, 1000)
     y_grid = list()
     for x in x_grid:
@@ -37,7 +34,6 @@ def get_grid_data(min_max_by_cls, x_mean_std_by_cls):
 
 
 def plot_gaussian_distribution(idx, col, x_grid, y_grid, te_likely_by_cls, test_data, axes):
-    # plot gaussian distribution
     for i in range(y_grid.shape[1]):
         axes[idx].plot(x_grid, y_grid.iloc[:, i])
 
@@ -70,21 +66,14 @@ def gaussian_naive_bayes():
         x_mean_std_by_cls = [(c.iloc[0, 1], c.iloc[:, 0].mean(), c.iloc[:, 0].std()) for c in x_by_cls]
         print(f"mean and std of {col}: ", x_mean_std_by_cls)
 
-        # gaussian distribution
-        min_max_by_cls = pd.DataFrame(columns=['min', 'max'])
-
-        for i, c in enumerate(x_by_cls):
-            # initial val for x axis
-            curr_min = c.iloc[:, 0].min()
-            curr_max = c.iloc[:, 0].max()
-            min_max_by_cls.loc[i] = [curr_min, curr_max]
-
         # gaussian distribution(likelihood) for test data
         te_gs_by_cls = [(cls, get_gaussian_dist(test_data[col], mu, sigma)) for cls, mu, sigma in x_mean_std_by_cls]
         te_likely_by_cls.append(te_gs_by_cls)
 
         # linspace data for plotting
-        x_grid, y_grid = get_grid_data(min_max_by_cls, x_mean_std_by_cls)
+        curr_min = curr_df.iloc[:, 0].min()
+        curr_max = curr_df.iloc[:, 0].max()
+        x_grid, y_grid = get_grid_data(curr_min, curr_max, x_mean_std_by_cls)
 
         # plot gaussian distribution
         plot_gaussian_distribution(idx, col, x_grid, y_grid, te_likely_by_cls, test_data, axes)
