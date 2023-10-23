@@ -16,7 +16,7 @@ from sklearn import datasets
 from sklearn.model_selection import train_test_split
 
 from tensorflow.keras import datasets
-
+from tensorflow.keras.utils import to_categorical
 
 
 def perceptron_test():
@@ -175,37 +175,69 @@ def regression_boston():
     plt.show()
 
 
+def mnist_test():
+    np.random.seed(0)
+    tf.random.set_seed(0)
+    (X_tn0, y_tn0), (X_te0, y_te0) = datasets.mnist.load_data()
+
+    print(X_tn0.shape)
+    print(y_tn0.shape)
+    print(X_te0.shape)
+    print(y_te0.shape)
+
+    plt.figure(figsize=(10, 5))
+    for i in range(2*5):
+        plt.subplot(2, 5, i+1)
+        plt.imshow(X_tn0[i].reshape((28, 28)), cmap='Greys')
+
+    # plt.show()
+
+    X_tn_re = X_tn0.reshape(60000, 28, 28, 1)
+    X_tn = X_tn_re / 255
+    print(X_tn.shape)
+
+    X_te_re = X_te0.reshape(10000, 28, 28, 1)
+    X_te = X_te_re / 255
+    print(X_te.shape)
+
+
+#####
 
 np.random.seed(0)
 tf.random.set_seed(0)
+
 (X_tn0, y_tn0), (X_te0, y_te0) = datasets.mnist.load_data()
 
-print(X_tn0.shape)
-print(y_tn0.shape)
-print(X_te0.shape)
-print(y_te0.shape)
+def show_img():
+    plt.figure(figsize=(10, 5))
+    for i in range(2*5):
+        plt.subplot(2, 5, i+1)
+        plt.imshow(X_tn0[i].reshape((28, 28)), cmap='Greys')
 
-plt.figure(figsize=(10, 5))
-for i in range(2*5):
-    plt.subplot(2, 5, i+1)
-    plt.imshow(X_tn0[i].reshape((28, 28)), cmap='Greys')
+    plt.show()
 
-# plt.show()
 
+print(set(y_tn0))
+print(f"{X_tn0.shape = }")
 X_tn_re = X_tn0.reshape(60000, 28, 28, 1)
 X_tn = X_tn_re / 255
-print(X_tn.shape)
-
 X_te_re = X_te0.reshape(10000, 28, 28, 1)
 X_te = X_te_re / 255
 print(X_te.shape)
 
+# y라벨이 10개 종류니까 원핫인코딩하면 가로축이 10개가 됨
+y_tn = to_categorical(y_tn0)
+y_te = to_categorical(y_te0)
 
-if __name__ == '__main__':
-    # perceptron_test()
-    # tensorflow_test1()
-    # tensorflow_test2()
-    # classify_wine()
-    # regression_boston()
-    # cnn_test()
-    pass
+
+
+print('here')
+
+
+# if __name__ == '__main__':
+#     # perceptron_test()
+#     # tensorflow_test1()
+#     # tensorflow_test2()
+#     # classify_wine()
+#     # regression_boston()
+#     pass
