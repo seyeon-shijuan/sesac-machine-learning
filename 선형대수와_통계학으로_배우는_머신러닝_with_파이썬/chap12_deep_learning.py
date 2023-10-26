@@ -2,21 +2,25 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 
-import tensorflow as tf
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense
-from tensorflow.keras.layers import Input
-from tensorflow.keras.models import Model
-from tensorflow.keras.models import load_model
-from tensorflow.keras.utils import to_categorical
-from tensorflow.keras.layers import BatchNormalization
-from tensorflow.keras.layers import Activation
-
 from sklearn import datasets
 from sklearn.model_selection import train_test_split
 
+import tensorflow as tf
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense
+from tensorflow.keras.layers import Conv2D
+from tensorflow.keras.layers import MaxPool2D
+from tensorflow.keras.layers import Flatten
+from tensorflow.keras.layers import Dropout
+from tensorflow.keras.layers import Input
+from tensorflow.keras.models import Model
+from tensorflow.keras.models import load_model
+from tensorflow.keras.layers import BatchNormalization
+from tensorflow.keras.layers import Activation
+
 from tensorflow.keras import datasets
 from tensorflow.keras.utils import to_categorical
+from tensorflow.keras.preprocessing import sequence
 
 
 def perceptron_test():
@@ -201,37 +205,112 @@ def mnist_test():
     print(X_te.shape)
 
 
-#####
+def cnn():
+    np.random.seed(0)
+    tf.random.set_seed(0)
 
-np.random.seed(0)
-tf.random.set_seed(0)
+    (X_tn0, y_tn0), (X_te0, y_te0) = datasets.mnist.load_data()
 
-(X_tn0, y_tn0), (X_te0, y_te0) = datasets.mnist.load_data()
+    def show_img():
+        plt.figure(figsize=(10, 5))
+        for i in range(2*5):
+            plt.subplot(2, 5, i+1)
+            plt.imshow(X_tn0[i].reshape((28, 28)), cmap='Greys')
 
-def show_img():
+        plt.show()
+
+
+    print(set(y_tn0))
+    print(f"{X_tn0.shape}")
+    X_tn_re = X_tn0.reshape(60000, 28, 28, 1)
+    X_tn = X_tn_re / 255
+    X_te_re = X_te0.reshape(10000, 28, 28, 1)
+    X_te = X_te_re / 255
+    print(X_te.shape)
+
+    # y라벨이 10개 종류니까 원핫인코딩하면 가로축이 10개가 됨
+    y_tn = to_categorical(y_tn0)
+    y_te = to_categorical(y_te0)
+
+    # 합성곱 신경망 생성
+
+    n_class = len(set(y_tn0))
+    model = Sequential()
+    model.add(Conv2D(32, kernel_size=(5, 5),
+                     input_shape=(28, 28, 1),
+                     padding='valid',
+                     activation='relu'))
+    model.add(MaxPool2D(pool_size=(2, 2)))
+    model.add(Dropout(0.25))
+    model.add(Conv2D(32, kernel_size=(3, 3),
+                     padding='valid',
+                     activation='relu'))
+    model.add(MaxPool2D(pool_size=(2, 2)))
+    model.add(Dropout(0.25))
+    model.add(Flatten())
+    model.add(Dense(1024, activation='relu'))
+    model.add(Dropout(0.5))
+    model.add(Dense(n_class, activation='softmax'))
+    model.summary()
+
+    # compile
+    model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+
+    # 학습
+    hist = model.fit(X_tn, y_tn, epochs=3, batch_size=100)
+
+    # 모형 평가
+    print(f"model.evaluate training = {model.evaluate(X_tn, y_tn)[1]}")
+    print(f"model.evaluate test = {model.evaluate(X_te, y_te)}")
+
+    # 오답 데이터 확인
+    y_pred_hot = model.predict(X_te)
+    print(y_pred_hot[0])
+    y_pred = np.argmax(y_pred_hot, axis=1)
+    print(y_pred)
+    diff = y_te0 - y_pred
+    diff_idx = []
+    y_len = len(y_te0)
+    for i in range(0, y_len):
+        if(diff[i] !=0):
+            diff_idx.append(i)
+
+    # 오답 데이터 시각화
     plt.figure(figsize=(10, 5))
     for i in range(2*5):
         plt.subplot(2, 5, i+1)
-        plt.imshow(X_tn0[i].reshape((28, 28)), cmap='Greys')
+        raw_idx = diff_idx[i]
+        plt.imshow(X_te0[raw_idx].reshape(28, 28), cmap='Greys')
 
     plt.show()
 
 
-print(set(y_tn0))
-print(f"{X_tn0.shape = }")
-X_tn_re = X_tn0.reshape(60000, 28, 28, 1)
-X_tn = X_tn_re / 255
-X_te_re = X_te0.reshape(10000, 28, 28, 1)
-X_te = X_te_re / 255
-print(X_te.shape)
+(X_tn0, y_tn0), (X_te0, y_te0) = datasets.imdb.load_data(num_words=2000)
+print(X_tn0.shape)
+print(y_tn0.shape)
+print(X_te0.shape)
+print(y_tn0.shape)
 
-# y라벨이 10개 종류니까 원핫인코딩하면 가로축이 10개가 됨
-y_tn = to_categorical(y_tn0)
-y_te = to_categorical(y_te0)
+X_train = X_tn0[0:20000]
+y_train = y_tn0[0:20000]
+X_valid = X_tn0[20000:25000]
+y_valid = y_tn0[20000:25000]
 
+print(X_train[0])
 
+# 개별 피처
+print(f"len(X_train[0]) = {len(X_train[0])}")
+print(f"len(X_train[0]) = {len(X_train[1])}")
 
-print('here')
+# 타깃 클래스 확인
+print(f"set(y_te0) = {set(y_te0)}")
+print(f"len(set(y_te0)) = {len(set(y_te0))}")
+
+# 피처 데이터 변형
+X_train = sequence.pad_sequences(X_train, maxlen=100)
+X_valid = sequence.pad_sequences(X_valid, maxlen=100)
+X_test = sequence.pad_sequences(X_te0, maxlen=100)
+print(f"X_train, X_valid, X_test = {X_train.shape, X_valid.shape, X_test.shape}")
 
 
 # if __name__ == '__main__':
@@ -240,4 +319,4 @@ print('here')
 #     # tensorflow_test2()
 #     # classify_wine()
 #     # regression_boston()
-#     pass
+#     # cnn()

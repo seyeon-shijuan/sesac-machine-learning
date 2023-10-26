@@ -83,6 +83,7 @@ def gaussian_naive_bayes():
     fig.tight_layout()
 
 
+
 if __name__ == '__main__':
     gaussian_naive_bayes()
     plt.show()
