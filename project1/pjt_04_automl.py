@@ -22,6 +22,5 @@ s.plot_model(best, plot='auc')
 s.plot_model(best, plot='confusion_matrix')
 s.predict_model(best)
 
-
-
 print('here')
+
