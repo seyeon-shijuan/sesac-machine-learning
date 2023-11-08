@@ -13,13 +13,12 @@ class GameLauncher:
     def __call__(self):
         while True:
             print("======================================")
-            # next_move = int(input("SeSAC 온라인에 오신 것을 환영합니다.\n"
-            #                       "1. 새로운 게임 시작하기 \n"
-            #                       "2. 지난 게임 불러오기 \n"
-            #                       "3. 게임 종료하기 \n"
-            #                       "다음 중 어떤 것을 하시겠습니까?"
-            #                       ))
-            next_move = 1
+            next_move = int(input("SeSAC 온라인에 오신 것을 환영합니다.\n"
+                                  "1. 새로운 게임 시작하기 \n"
+                                  "2. 지난 게임 불러오기 \n"
+                                  "3. 게임 종료하기 \n"
+                                  "다음 중 어떤 것을 하시겠습니까?"
+                                  ))
 
             if next_move == 1:
                 print("새로운 캐릭터를 생성합니다.")

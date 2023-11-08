@@ -7,15 +7,6 @@ class Utils:
         self.char = char
         self.slime = Slime()
 
-        self.moves = {
-            "1": lambda x=self.slime: self.char.attack_monster(x),
-            "2": self.char.print_states,
-            "3": self.char.buy_potion,
-            "4": self.char.drink_potion,
-            "5": self.char.save_states,
-            "0": self.exit_game
-        }
-
     @staticmethod
     def exit_game():
         print("============ 게임 종료 ===========")
@@ -37,8 +28,16 @@ class Utils:
                               "다음 중 어떤 것을 하시겠습니까?"
                               )
 
-            # 아닌 경우
-            result = self.moves[next_move]()
+            moves = {
+                "1": lambda x=self.slime: self.char.attack_monster(x),
+                "2": self.char.print_states,
+                "3": self.char.buy_potion,
+                "4": self.char.drink_potion,
+                "5": self.char.save_states,
+                "0": self.exit_game
+            }
+            result = moves[next_move]()
 
             if result == -1:
                 break
+

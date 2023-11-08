@@ -1,8 +1,16 @@
-import collections
+import os
 import pandas as pd
 
 SAVED_PATH = "./data/save_file.csv"
+BASE_DIR = "./data/"
 
+
+def create_directory(directory):
+    try:
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+    except OSError:
+        print("Error: Failed to create the directory.")
 
 class GameObject:
     def __init__(self):
@@ -23,7 +31,6 @@ class Character(GameObject):
         base_attr = {
             'lv': 1,
             'exp': 0,
-            # 'to_lv_up': 100,
             'hp': 100,
             'max_hp': 100,
             'damage': 10,
@@ -35,34 +42,25 @@ class Character(GameObject):
             setattr(self, k, v)
 
     def print_states(self):
-        print("\n----------")
-        print("현재 레벨:", self.lv)
-        print("현재 경험치:", self.exp)
-        print("다음 레벨을 위한 경험치:", self.lv * 100)
-        print(f"HP: {self.hp}")
-        print(f"HP 최대치: {self.max_hp}")
-        print(f"공격력: {self.damage}")
-        print(f"돈: {self.money}")
-        print('----------\n')
-        # states = vars(self)
-        # states['to_lv_up'] = states['to_lv_up'] - states['exp']
-        # to_print = ("--------------- \n "
-        #             f"현재 레벨: {self.lv} \n "
-        #             f"현재 경험치: {self.exp} \n "
-        #             f"다음 레벨을 위한 경험치: {self.lv * 100} \n "
-        #             f"HP: {self.hp} \n "
-        #             f"HP 최대치: {self.max_hp} \n "
-        #             f"공격력: {self.damage} \n "
-        #             f"돈: {self.money} \n "
-        #             f"포션: {self.n_potion} \n "
-        #             "---------------")
+        to_print = ("--------------- \n "
+                    f"현재 레벨: {self.lv} \n "
+                    f"현재 경험치: {self.exp} \n "
+                    f"다음 레벨을 위한 경험치: {self.lv * 100} \n "
+                    f"HP: {self.hp} \n "
+                    f"HP 최대치: {self.max_hp} \n "
+                    f"공격력: {self.damage} \n "
+                    f"돈: {self.money} \n "
+                    f"포션: {self.n_potion} \n "
+                    "---------------")
 
-        # print(to_print)
+        print(to_print)
 
     def save_states(self):
         states = vars(self)
-        del (states['to_lv_up'])
         df = pd.DataFrame(states, index=[0])
+        if not os.path.exists(SAVED_PATH):
+            create_directory(BASE_DIR)
+
         df.to_csv(SAVED_PATH, index=False)
         print("saved")
 
@@ -72,7 +70,6 @@ class Character(GameObject):
         for k, v in states.items():
             setattr(self, k, v)
 
-        # self.to_lv_up = self.lv * 100
 
     def check_level_up(self):
         if self.exp >= self.lv * 100:
