@@ -32,12 +32,13 @@ preds = np.arange(start=0.1, stop=1, step=0.01)
 case1 = [loss_function.forward(y=0, pred=i) for i in preds]
 case2 = [loss_function.forward(y=1, pred=i) for i in preds]
 
-fig, axes = plt.subplots(ncols=2, figsize=(12, 6))
+fig, axes = plt.subplots(ncols=2, figsize=(8, 4))
 axes[0].plot(preds, case1)
 axes[0].set_title('case.1 y=0'); axes[0].set_xlabel('preds'); axes[0].set_ylabel('loss')
 
 axes[1].plot(preds, case2)
 axes[1].set_title('case.2 y=1'); axes[1].set_xlabel('preds'); axes[1].set_ylabel('loss')
 
+plt.tight_layout()
 plt.show()
 
