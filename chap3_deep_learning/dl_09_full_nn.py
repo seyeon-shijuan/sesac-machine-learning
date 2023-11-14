@@ -12,21 +12,31 @@ class AffineFunction:
         return self.z
 
 
+    def backward(self, dJ_dz):
+        # 하는중
+        pass
+
+
 class Sigmoid:
     def forward(self, z):
+        self.z = z
         self.a = 1 / (1 + np.exp(-z))
         return self.a
 
     def backward(self, dJ_dpred):
-        # da_dz
-
+        # 0. 기본 식: 시그모이드 미분값(da_dz) * 로스 미분값(dJ_dpred)
+        # 1. 시그모이드 미분값 da_dz = e^-z * (1+e^-z)**-2
+        da_dz = np.exp(-self.z) * np.power((1 + np.exp(-self.z)), -2)
+        # 2. 최종 식 da_dz * dJ_pred
+        dJ_dz = da_dz * dJ_dpred
+        return dJ_dz
 
 
 class BCELoss:
     def forward(self, y, pred):
         self.pred = pred
         self.y = y
-        J = -(self.y * np.log(self.pred) + (1 - self.y) * np.log(1 - self.pred))
+        J = -(y * np.log(pred) + (1 - y) * np.log(1 - pred))
         return J
 
     def backward(self):
@@ -49,7 +59,9 @@ class Model:
 
     def backward(self):
         dJ_dpred = self.loss.backward()
-        self.sigmoid.backward(dJ_dpred)
+        dJ_dz = self.sigmoid.backward(dJ_dpred)
+        self.affine.backward(dJ_dz)
+
 
 
 # AND
