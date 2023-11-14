@@ -96,16 +96,15 @@ def train_andgate():
     loss_fn = BCELoss()
     lr = 0.1
 
-    # print(f"AND GATE Train with {X=} {y=}")
-
     for i in range(2000):
         X = X_data[i % 4]
         y = y_data[i % 4]
         pred = model.forward(X)
         loss, dJ_dpred = loss_fn(pred, y)
-        print(f"{X=}, {y=}, {pred=:.4f}, {loss=:.4f}")
         w, b= model.backward(dJ_dpred, lr)
-        print(f"{w=}, {b=:.4f}", end=" /\t")
+        if i in [0, 201, 402, 603, 804, 1005, 1206, 1407, 1608, 1809, 2000]:
+            print(f"{w=}, {b=:.4f}", end=" / ")
+            print(f"{X=}, {y=}, {pred=:.4f}, {loss=:.4f}")
 
 
 if __name__ == '__main__':
