@@ -2,19 +2,33 @@ import numpy as np
 
 # weight, bias를 random으로 설정하여 순전파 역전파
 class AffineFunction:
-    def __init__(self, w1, w2, b):
+    def __init__(self):
         self.w1 = np.random.normal(0, 1, (1,))
         self.w2 = np.random.normal(0, 1, (1,))
         self.b = np.random.normal(0, 1, (1,))
 
     def forward(self, x1, x2):
+        self.x1, self.x2 = x1, x2
         self.z = self.w1 * x1 + self.w2 * x2 + self.b
         return self.z
 
+    def backward(self, dJ_dz, lr):
+        # 0. 기본 식:
+        # w1 := w1 - LR * [w1에 대한 미분값(dz_dw1) * 시그모이드에서 넘어온 미분값(dJ_dz)]
+        # w2 := w2 - LR * [w2에 대한 미분값(dz_dw2) * 시그모이드에서 넘어온 미분값(dJ_dz)]
+        # b := b - LR * [b에 대한 미분값(dz_db) * 시그모이드에서 넘어온 미분값(dJ_dz)]
 
-    def backward(self, dJ_dz):
-        # 하는중
-        pass
+        # 1. 파라미터 별 미분 값 구하기
+        dz_dw1 = self.x1
+        dz_dw2 = self.x2
+        dz_db = 1
+
+        # 2. 파라미터 업데이트
+        self.w1 -= lr * dz_dw1 * dJ_dz
+        self.w2 -= lr * dz_dw2 * dJ_dz
+        self.b -= lr * dz_db * dJ_dz
+
+        # print(f"updated >> w1={self.w1}, w2={self.w2}, b={self.b}")
 
 
 class Sigmoid:
@@ -33,42 +47,44 @@ class Sigmoid:
 
 
 class BCELoss:
-    def forward(self, y, pred):
-        self.pred = pred
-        self.y = y
+    def __call__(self, pred, y):
+        # 1. loss 계산
         J = -(y * np.log(pred) + (1 - y) * np.log(1 - pred))
-        return J
-
-    def backward(self):
-        # dJ /d yhat
-        dJ_dpred = (self.pred - self.y) / (self.pred * (1 - self.pred))
-        return dJ_dpred
+        # 2. loss 미분 값계산:  dJ /d yhat
+        dJ_dpred = (pred - y) / (pred + 1e-7 * (1 - pred + 1e-7))
+        # 분모의 + 1e-7는 ZeroDivision Error 막기 위해 추가함 (0으로 나누면 에러나서)
+        return J, dJ_dpred
 
 
 class Model:
     def __init__(self):
         self.affine = AffineFunction()
         self.sigmoid = Sigmoid()
-        self.loss = BCELoss()
 
-    def forward(self, x1, x2, y):
+    def forward(self, x1, x2):
         z = self.affine.forward(x1, x2)
         pred = self.sigmoid.forward(z)
-        J = self.loss.forward(y, pred)
-        return pred, J
+        return pred
 
-    def backward(self):
-        dJ_dpred = self.loss.backward()
+    def backward(self, dJ_dpred, lr):
         dJ_dz = self.sigmoid.backward(dJ_dpred)
-        self.affine.backward(dJ_dz)
-
+        self.affine.backward(dJ_dz, lr)
 
 
 # AND
+X = (1, 0)
 y = 0
 model = Model()
-pred, J = model.forward(1, 0, y)
-model.backward()
+loss_fn = BCELoss()
+lr = 0.1
+
+print(f"AND GATE Train with {X=} {y=}")
+
+for i in range(30):
+    pred = model.forward(*X)
+    loss, dJ_dpred = loss_fn(pred, y)
+    print(f"{loss[0]=:.4f}")
+    model.backward(dJ_dpred, lr)
 
 
 
