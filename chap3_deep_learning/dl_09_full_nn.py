@@ -3,13 +3,12 @@ import numpy as np
 # weight, bias를 random으로 설정하여 순전파 역전파
 class AffineFunction:
     def __init__(self):
-        self.w1 = np.random.normal(0, 1, (1,))
-        self.w2 = np.random.normal(0, 1, (1,))
-        self.b = np.random.normal(0, 1, (1,))
+        self.w = np.random.randn(2)
+        self.b = np.random.randn()
 
-    def forward(self, x1, x2):
-        self.x1, self.x2 = x1, x2
-        self.z = self.w1 * x1 + self.w2 * x2 + self.b
+    def forward(self, X):
+        self.X = X
+        self.z = np.dot(X, self.w) + self.b
         return self.z
 
     def backward(self, dJ_dz, lr):
@@ -19,16 +18,14 @@ class AffineFunction:
         # b := b - LR * [b에 대한 미분값(dz_db) * 시그모이드에서 넘어온 미분값(dJ_dz)]
 
         # 1. 파라미터 별 미분 값 구하기
-        dz_dw1 = self.x1
-        dz_dw2 = self.x2
+        dz_dw = self.X
         dz_db = 1
 
         # 2. 파라미터 업데이트
-        self.w1 -= lr * dz_dw1 * dJ_dz
-        self.w2 -= lr * dz_dw2 * dJ_dz
+        self.w -= lr * dz_dw * dJ_dz
         self.b -= lr * dz_db * dJ_dz
+        return self.w, self.b
 
-        # print(f"updated >> w1={self.w1}, w2={self.w2}, b={self.b}")
 
 
 class Sigmoid:
@@ -39,8 +36,10 @@ class Sigmoid:
 
     def backward(self, dJ_dpred):
         # 0. 기본 식: 시그모이드 미분값(da_dz) * 로스 미분값(dJ_dpred)
-        # 1. 시그모이드 미분값 da_dz = e^-z * (1+e^-z)**-2
-        da_dz = np.exp(-self.z) * np.power((1 + np.exp(-self.z)), -2)
+
+        # 1. 시그모이드 미분값 da_dz = a(1-a)
+        da_dz = self.a * (1 - self.a)
+
         # 2. 최종 식 da_dz * dJ_pred
         dJ_dz = da_dz * dJ_dpred
         return dJ_dz
@@ -61,31 +60,57 @@ class Model:
         self.affine = AffineFunction()
         self.sigmoid = Sigmoid()
 
-    def forward(self, x1, x2):
-        z = self.affine.forward(x1, x2)
+    def forward(self, X):
+        z = self.affine.forward(X)
         pred = self.sigmoid.forward(z)
         return pred
 
     def backward(self, dJ_dpred, lr):
         dJ_dz = self.sigmoid.backward(dJ_dpred)
-        self.affine.backward(dJ_dz, lr)
+        w, b = self.affine.backward(dJ_dz, lr)
+        return w, b
+
+def train():
+    # AND
+    X = np.array([1, 0])
+    y = 0
+    model = Model()
+    loss_fn = BCELoss()
+    lr = 0.1
+
+    print(f"AND GATE Train with {X=} {y=}")
+
+    for i in range(300):
+        pred = model.forward(X)
+        loss, dJ_dpred = loss_fn(pred, y)
+        print(f"{X=}, {y=}, {pred=:.4f}, {loss=:.4f}")
+        w, b = model.backward(dJ_dpred, lr)
+        print(f"{w=}, {b=:.4f}", end=" /\t")
 
 
-# AND
-X = (1, 0)
-y = 0
-model = Model()
-loss_fn = BCELoss()
-lr = 0.1
+def train_andgate():
+    # AND
+    X_data = np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
+    y_data = [0, 0, 0, 1]
+    model = Model()
+    loss_fn = BCELoss()
+    lr = 0.1
 
-print(f"AND GATE Train with {X=} {y=}")
+    # print(f"AND GATE Train with {X=} {y=}")
 
-for i in range(30):
-    pred = model.forward(*X)
-    loss, dJ_dpred = loss_fn(pred, y)
-    print(f"{loss[0]=:.4f}")
-    model.backward(dJ_dpred, lr)
+    for i in range(2000):
+        X = X_data[i % 4]
+        y = y_data[i % 4]
+        pred = model.forward(X)
+        loss, dJ_dpred = loss_fn(pred, y)
+        print(f"{X=}, {y=}, {pred=:.4f}, {loss=:.4f}")
+        w, b= model.backward(dJ_dpred, lr)
+        print(f"{w=}, {b=:.4f}", end=" /\t")
 
+
+if __name__ == '__main__':
+    # train()
+    train_andgate()
 
 
 
