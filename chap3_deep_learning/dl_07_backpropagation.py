@@ -10,7 +10,7 @@ class Function1:
     def backward(self, dy_dz):
         dz_dx = 1
         dy_dx = dy_dz * dz_dx
-        return dy_dz
+        return dy_dx
 
 
 class Function2:
@@ -23,50 +23,41 @@ class Function2:
         dy_dz = 4 * self.z
         return dy_dz
 
-# 만들고 DM 보내기
 
-class AND:
-    def __init__(self):
-        self.w1 = 0.5
-        self.w2 = 0.5
-        self.b = -0.7
+function1, function2 = Function1(), Function2()
 
-    def forward(self, x1, x2):
-        z = self.w1 * x1 + self.w2 * x2 + self.b
-        return z
+x = 5
+z = function1.forward(x)
+print(f"{z=}")
+y = function2.forward(z)
+print(f"{y=}")
 
-    def backward(self, dy_dz):
-        # 아직 안했음
-        dz_dx = 1
-        dy_dx = dy_dz * dz_dx
-        return dy_dz
+dy_dx = function1.backward(function2.backward())
+print(f"{dy_dx=}")
 
-
-class ActivationFunction:
-    def forward(self, z):
-        out = 1 / 1 + np.exp(-z)
-        return out
-
-    def backward(self, dy_dz):
-        dz_dx = 1
-        dy_dx = dy_dz * dz_dx
-        return dy_dz
+print('==================')
 
 
 class Function:
     def __init__(self):
-        self.function1 = AND()
-        self.function2 = ActivationFunction()
+        self.func1 = Function1()
+        self.func2 = Function2()
 
-    def forward(self, x_val):
-        z = self.function1.forward(*x_val)
+    def forward(self, x):
+        z = self.func1.forward(x)
         print(f"{z=}")
-        out = self.function2.forward(z)
-        print(f"{out=}")
+        y = self.func2.forward(z)
+        print(f"{y=}")
+        return y
+
+    def backward(self):
+        dy_dz = self.func2.backward()
+        print(f"{dy_dz=}")
+        dy_dx = self.func1.backward(dy_dz)
+        print(f"{dy_dx=}")
+        return dy_dx
 
 
-and_gate = Function()
-and_gate.forward((1, 1))
-
-
-
+fn = Function()
+y = fn.forward(5)
+dy_dx = fn.backward()
