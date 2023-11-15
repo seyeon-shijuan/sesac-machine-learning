@@ -23,28 +23,48 @@ class AffineFunction:
         dz_dw = self.X
         dz_db = 1
 
+        curr_dim = 1 if np.isscalar(dJ_dz) else len(dJ_dz)
+
         # 2. 파라미터 업데이트
-        self.w -= lr * dz_dw * dJ_dz
-        self.b -= lr * dz_db * dJ_dz
-        return self.w, self.b
+        dJ_dw = (dz_dw * dJ_dz).reshape(-1, curr_dim)
+        dJ_db = dz_db * dJ_dz
+
+        self.w -= lr * dJ_dw
+        self.b -= lr * dJ_db
+
+        # self.w -= lr * dz_dw * dJ_dz
+        # self.b -= lr * dz_db * dJ_dz
+        # return self.w, self.b
+        return self.w
 
 
 
 class Sigmoid:
     def forward(self, z):
+        # z가 scalar인 경우 array []를 풀기
+        if z.shape[0] == 1:
+            self.z = z[0]
+            self.a = 1 / (1 + np.exp(-self.z))
+            return self.a
+
         self.z = z
-        self.a = 1 / (1 + np.exp(-z))
+        self.a = 1 / (1 + np.exp(-self.z))
         return self.a
+
 
     def backward(self, dJ_dpred):
         # 0. 기본 식: 시그모이드 미분값(da_dz) * 로스 미분값(dJ_dpred)
 
+        # 2개 이상의 노드에서 sigmoid backpropagation을 하는 경우
+        if not np.isscalar(dJ_dpred):
+            dJ_dpred = dJ_dpred.flatten()
+
         # 1. 시그모이드 미분값 da_dz = a(1-a)
         da_dz = self.a * (1 - self.a)
-
         # 2. 최종 식 da_dz * dJ_pred
         dJ_dz = da_dz * dJ_dpred
         return dJ_dz
+
 
 
 class BCELoss:
@@ -71,10 +91,14 @@ class Model:
         pred = self.sigmoid2.forward(z2)
         return pred
 
-    # def backward(self, dJ_dpred, lr):
-    #     dJ_dz = self.sigmoid.backward(dJ_dpred)
-    #     w, b = self.affine.backward(dJ_dz, lr)
-    #     return w, b
+    def backward(self, dJ_da2, lr):
+        dJ_dz2 = self.sigmoid2.backward(dJ_da2)
+        dJ_da1 = self.affine2.backward(dJ_dz2, lr)
+
+        dJ_dz1 = self.sigmoid1.backward(dJ_da1)
+        dJ_dX = self.affine1.backward(dJ_dz1, lr)
+
+        return dJ_dX
 
 
 
@@ -86,9 +110,10 @@ def calculate_accuracy(preds, targets):
 
 
 def main_routine():
+    np.random.seed(8000) # 3500 3506 8000
     N_SAMPLES = 100
     LR = 0.001
-    EPOCHS = 30
+    EPOCHS = 30 # 30
 
     X, y = make_blobs(n_samples=N_SAMPLES, centers=2, n_features=2,
                       cluster_std=0.5, random_state=0)
@@ -108,7 +133,7 @@ def main_routine():
             '''Training'''
             pred = model.forward(X_)
             loss, dJ_dpred = loss_fn(pred, y_)
-            w, b = model.backward(dJ_dpred, LR)
+            model.backward(dJ_dpred, LR)
 
             '''Metric(loss, accuracy) Calculations'''
             pred_list.append(pred)
