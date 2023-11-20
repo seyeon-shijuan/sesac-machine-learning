@@ -9,11 +9,11 @@ from torch.optim import SGD
 
 
 class MLP(nn.Module):
-    def __init__(self, n_features):
+    def __init__(self, n_features, n_hdn_nrns):
         super(MLP, self).__init__()
-        self.fc1 = nn.Linear(in_features=n_features, out_features=3)
+        self.fc1 = nn.Linear(in_features=n_features, out_features=n_hdn_nrns)
         self.fc1_act = nn.Sigmoid()
-        self.fc2 = nn.Linear(in_features=3, out_features=1)
+        self.fc2 = nn.Linear(in_features=n_hdn_nrns, out_features=1)
         self.fc2_act = nn.Sigmoid()
 
     def forward(self, x):
@@ -86,7 +86,7 @@ if __name__ == '__main__':
 
     dataloader = get_dataset(N_SAMPLES, BATCH_SIZE)
 
-    model = MLP(n_features=n_features).to(DEVICE)
+    model = MLP(n_features=n_features, n_hdn_nrns=3).to(DEVICE)
     loss_function = nn.BCELoss()
     optimizer = SGD(model.parameters(), lr=LR)
 
