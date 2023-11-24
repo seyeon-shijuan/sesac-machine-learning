@@ -87,6 +87,6 @@ def one_dim_corr_np2():
 
 if __name__ == '__main__':
     # one_dim_correlation()
-    two_dim_correlation()
+    # two_dim_correlation()
     # one_dim_corr_np1()
-    # one_dim_corr_np2()
+    one_dim_corr_np2()
