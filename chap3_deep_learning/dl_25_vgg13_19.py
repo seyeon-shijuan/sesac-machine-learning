@@ -12,6 +12,7 @@ from torchvision.datasets import CIFAR10
 from torchvision.transforms import ToTensor
 from tqdm import tqdm
 
+import matplotlib.pyplot as plt
 
 @dataclass
 class Constants:
@@ -416,7 +417,8 @@ def classify_cifar10(c):
         epoch_accr = n_corrects / c.N_SAMPLES
 
         print(f"epoch {e} : loss={epoch_loss.item():.4f}, accr={epoch_accr}")
-        losses.append(epoch_loss)
+
+        losses.append(epoch_loss.item())
         accs.append(epoch_accr)
 
     print("==============")
@@ -433,6 +435,18 @@ def classify_cifar10(c):
     torch.save(model, c.PATH)
 
 
+def visualize(losses, accs):
+    fig, axes = plt.subplots(nrows=2, ncols=1, figsize=(10, 5))
+    axes[0].plot(losses)
+    axes[1].plot(accs)
+
+    axes[1].set_xlabel("Epoch", fontsize=15)
+    axes[0].set_ylabel("Loss", fontsize=15)
+    axes[1].set_ylabel("Accuracy", fontsize=15)
+    axes[0].tick_params(labelsize=10)
+    axes[1].tick_params(labelsize=10)
+    fig.suptitle("VGG19 Metrics by Epoch", fontsize=16)
+    plt.show()
 
 
 if __name__ == '__main__':
@@ -445,7 +459,7 @@ if __name__ == '__main__':
     constants = Constants(
         N_SAMPLES=50000,
         BATCH_SIZE=32,
-        EPOCHS=3,
+        EPOCHS=10,
         LR=0.01,
         DEVICE=get_device(),
         PATH="model/vgg19_cifar10.pt",
@@ -453,3 +467,8 @@ if __name__ == '__main__':
         SEED=80
     )
     classify_cifar10(constants)
+    with open(constants.METRIC_PATH, 'rb') as f:
+        metric_dict = pickle.load(f)
+
+    # metric_dict['losses'] = [x.item() for x in metric_dict['losses']]
+    visualize(metric_dict['losses'], metric_dict['accs'])
