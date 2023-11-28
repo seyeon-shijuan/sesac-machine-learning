@@ -1,13 +1,7 @@
 import torch
 import torch.nn as nn
 from collections import OrderedDict
-import numpy as np
-from torch.utils.data import DataLoader
-
-from torchvision.datasets import CIFAR10
-from torchvision.transforms import ToTensor
-
-
+from torchsummary import summary
 
 class VGGNet(nn.Module):
     def __init__(self):
@@ -76,7 +70,9 @@ class VGGNet(nn.Module):
 def run_vggnet():
     test_data = torch.randn((10, 3, 224, 224))
     model = VGGNet()
-    print(model)
+    summary(model.to('cuda'), input_size=(3, 224, 224))
+
+    model = model.to('cpu')
     pred = model.forward(test_data)
     print(pred.shape)
 
