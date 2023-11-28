@@ -12,33 +12,36 @@ from torchvision.transforms import ToTensor
 class VGGNet(nn.Module):
     def __init__(self):
         super(VGGNet, self).__init__()
-
-        self.feature = nn.Sequential(OrderedDict([
+        self.conv1 = nn.Sequential(OrderedDict([
             # 1. input (224 x 224x RGB image)
             ('conv3-64', nn.Conv2d(in_channels=3, out_channels=64, kernel_size=3, padding=1)),
             ('conv3-64-act', nn.ReLU()),
             ('maxpool1', nn.MaxPool2d(kernel_size=2, stride=2)),
+            ]))
 
-            # 2.
+        self.conv2 = nn.Sequential(OrderedDict([
             ('conv3-128', nn.Conv2d(in_channels=64, out_channels=128, kernel_size=3, padding=1)),
             ('conv3-128-act', nn.ReLU()),
             ('maxpool2', nn.MaxPool2d(kernel_size=2, stride=2)),
+            ]))
 
-            # 3.
+        self.conv3 = nn.Sequential(OrderedDict([
             ('conv3-256-1', nn.Conv2d(in_channels=128, out_channels=256, kernel_size=3, padding=1)),
             ('conv3-256-1-act', nn.ReLU()),
             ('conv3-256-2', nn.Conv2d(in_channels=256, out_channels=256, kernel_size=3, padding=1)),
             ('conv3-256-2-act', nn.ReLU()),
             ('maxpool3', nn.MaxPool2d(kernel_size=2, stride=2)),
+            ]))
 
-            # 4.
+        self.conv4 = nn.Sequential(OrderedDict([
             ('conv3-512-1', nn.Conv2d(in_channels=256, out_channels=512, kernel_size=3, padding=1)),
             ('conv3-512-1-act', nn.ReLU()),
             ('conv3-512-2', nn.Conv2d(in_channels=512, out_channels=512, kernel_size=3, padding=1)),
             ('conv3-512-2-act', nn.ReLU()),
             ('maxpool4', nn.MaxPool2d(kernel_size=2, stride=2)),
+            ]))
 
-            # 5.
+        self.conv5 = nn.Sequential(OrderedDict([
             ('conv3-512-3', nn.Conv2d(in_channels=512, out_channels=512, kernel_size=3, padding=1)),
             ('conv3-512-3-act', nn.ReLU()),
             ('conv3-512-4', nn.Conv2d(in_channels=512, out_channels=512, kernel_size=3, padding=1)),
@@ -59,22 +62,23 @@ class VGGNet(nn.Module):
         # (64, b)
 
     def forward(self, x):
-        x = self.feature(x)
+        x = self.conv1(x)
+        x = self.conv2(x)
+        x = self.conv3(x)
+        x = self.conv4(x)
+        x = self.conv5(x)
+
         x = x.view(x.size(0), -1)
         x = self.classifier(x)
         return x
 
 
 def run_vggnet():
-    # dataset = CIFAR10(root='data', train=True, transform=ToTensor(), download=True)
-    # dataloader = DataLoader(dataset, batch_size=16)
-
     test_data = torch.randn((10, 3, 224, 224))
     model = VGGNet()
     print(model)
     pred = model.forward(test_data)
     print(pred.shape)
-
 
 
 if __name__ == '__main__':

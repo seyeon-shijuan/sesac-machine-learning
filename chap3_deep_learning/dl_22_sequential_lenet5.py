@@ -55,6 +55,7 @@ def run_lenet():
     dataset = MNIST(root='data', train=True, download=True, transform=ToTensor())
     dataloader = DataLoader(dataset, batch_size=BATCH_SIZE)
     model = LeNet().to(DEVICE)
+    print(model)
 
     loss_fn = nn.CrossEntropyLoss()
     optimizer = Adam(model.parameters(), lr=LR)
