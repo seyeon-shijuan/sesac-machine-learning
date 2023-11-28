@@ -458,8 +458,8 @@ if __name__ == '__main__':
     # run_vgg19_block()
     constants = Constants(
         N_SAMPLES=50000,
-        BATCH_SIZE=32,
-        EPOCHS=10,
+        BATCH_SIZE=128,
+        EPOCHS=300,
         LR=0.01,
         DEVICE=get_device(),
         PATH="model/vgg19_cifar10.pt",
