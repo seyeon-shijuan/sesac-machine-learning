@@ -138,6 +138,7 @@ def train_cifar10(c):
 
             optimizer.zero_grad()
             loss = loss_fn(pred, y_)
+            loss.backward()
             optimizer.step()
 
             pred_cls = torch.argmax(pred, dim=1)
@@ -154,7 +155,7 @@ def train_cifar10(c):
         if e in [299, 499, 699, 899]:
             torch.save(model, c.PATH.replace('.pt', f"_epoch_{e}.pt"))
 
-    save_metrics(filepath=c.METRIC_PATH, n_epochs=len(dataloader), loss=losses, accuracy=accs)
+    save_metrics(filepath=c.METRIC_PATH, n_epochs=c.EPOCHS, loss=losses, accuracy=accs)
     torch.save(model, c.PATH)
     visualize(losses=losses, accrs=accs)
 
@@ -162,7 +163,7 @@ def train_cifar10(c):
 if __name__ == '__main__':
     constants = Constants(
         N_SAMPLES=50000,
-        BATCH_SIZE=1024,
+        BATCH_SIZE=2048,
         EPOCHS=1000,
         LR=0.0001,
         DEVICE=get_device(),
