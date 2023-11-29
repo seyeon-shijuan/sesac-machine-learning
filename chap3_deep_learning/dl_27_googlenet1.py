@@ -166,7 +166,7 @@ def run_inception_dim_reduction():
     print(f"{output_tensor.shape=}")
 
 
-def train_googlenet():
+def run_googlenet():
     BATCH_SIZE = 32
     H, W = 224, 224
     channels = 3
@@ -180,7 +180,7 @@ def train_googlenet():
 if __name__ == '__main__':
     # run_inception_naive()
     # run_inception_dim_reduction()
-    train_googlenet()
+    run_googlenet()
 
 
 
