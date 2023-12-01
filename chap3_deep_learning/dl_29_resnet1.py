@@ -60,7 +60,6 @@ class ResNet34(nn.Module):
             ResidualBlock(in_channels=64, out_channels=64),
             ResidualBlock(in_channels=64, out_channels=64),
             ResidualBlock(in_channels=64, out_channels=64))
-        self.conv2_act = nn.ReLU()
 
         # 3
         self.conv3 = nn.Sequential(
@@ -68,7 +67,6 @@ class ResNet34(nn.Module):
             ResidualBlock(in_channels=128, out_channels=128),
             ResidualBlock(in_channels=128, out_channels=128),
             ResidualBlock(in_channels=128, out_channels=128))
-        self.conv3_act = nn.ReLU()
 
         # 4
         self.conv4 = nn.Sequential(
@@ -78,31 +76,25 @@ class ResNet34(nn.Module):
             ResidualBlock(in_channels=256, out_channels=256),
             ResidualBlock(in_channels=256, out_channels=256),
             ResidualBlock(in_channels=256, out_channels=256))
-        self.conv4_act = nn.ReLU()
 
         # 5
         self.conv5 = nn.Sequential(
             ResidualBlockDown(in_channels=256, out_channels=512),
             ResidualBlock(in_channels=512, out_channels=512),
             ResidualBlock(in_channels=512, out_channels=512))
-        self.conv5_act = nn.ReLU()
 
         # 6
-        # self.avgpool = nn.AvgPool2d(kernel_size=7, stride=1)
-        self.avgpool = nn.AdaptiveAvgPool2d(output_size=1)
-        self.fc = nn.Linear(in_features=512, out_features=1000)
+        self.avgpool = nn.AvgPool2d(kernel_size=7, stride=7)
+        # self.avgpool = nn.AdaptiveAvgPool2d(output_size=1)
+        self.fc = nn.Linear(in_features=512, out_features=1024)
 
     def forward(self, x):
         x = self.conv1(x)
         x = self.conv1_act(x)
         x = self.conv2(x)
-        x = self.conv2_act(x)
         x = self.conv3(x)
-        x = self.conv3_act(x)
         x = self.conv4(x)
-        x = self.conv4_act(x)
         x = self.conv5(x)
-        x = self.conv5_act(x)
 
         x = self.avgpool(x)
         x = x.view(x.size(0), -1)
@@ -138,6 +130,7 @@ def run_rb_down():
     block = ResidualBlockDown(in_channels=channels, out_channels=128)
     output_tensor = block(input_tensor)
     print("out:", output_tensor.shape)
+
 
 def summary_residual_block():
     block = ResidualBlock(in_channels=64, out_channels=64)
