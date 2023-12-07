@@ -40,17 +40,17 @@ csum_logreturn = logreturn.cumsum()  # Cumulative sum of log returns
 
 
 fig, axs = plt.subplots(2, 1)
-axs[0].plot(close, color='red')
-axs[0].set_title('Closing Price')
-axs[0].set_ylabel('Close Price')
-axs[0].set_xlabel('Time Steps')
-
-axs[1].plot(csum_logreturn, color='green')
-axs[1].set_title('Cumulative Sum of Log Returns')
-axs[1].set_xlabel('Time Steps')
-
-fig.tight_layout()
-plt.show()
+# axs[0].plot(close, color='red')
+# axs[0].set_title('Closing Price')
+# axs[0].set_ylabel('Close Price')
+# axs[0].set_xlabel('Time Steps')
+#
+# axs[1].plot(csum_logreturn, color='green')
+# axs[1].set_title('Cumulative Sum of Log Returns')
+# axs[1].set_xlabel('Time Steps')
+#
+# fig.tight_layout()
+# plt.show()
 
 
 # Positional Encoder
